@@ -279,6 +279,7 @@ class RenderingCanvas(app.Canvas):
             
 
     def set_BufX(self):
+        self._bufXused = []
         self._bufXglsl = []
         self._common_file = ''
         try:
@@ -288,9 +289,11 @@ class RenderingCanvas(app.Canvas):
         for i in range(max_iChannels):
             try:
                 self._bufXglsl.append(self._common_file +'\n'+open('Buf%d.glsl' % i, 'r').read().encode('ascii', errors='ignore').decode())
+                self._bufXused.append(True)
             except FileNotFoundError:
-                print('FIle not found, used empty shader instead'+(' Buf%d.glsl' % i))
+                print('FIle not found, used empty shader instead'+(' Buf%d.glsl' % i) + " used placeholder 64x64 render size")
                 self._bufXglsl.append(self._common_file +'\n'+error_shader)
+                self._bufXused.append(False)
                 continue
         
     def set_Buf_uniform(self, uni, val):
@@ -322,16 +325,15 @@ class RenderingCanvas(app.Canvas):
         self._fboX.append([])
         self._texX.append([])
         self._fboX.append([])
-        
         for i in range(max_iChannels):
             self._texX[0].append(gloo.Texture2D(shape=self._output_size[::-1]
-                    + (4, ), format= 'rgba', interpolation='linear',wrapping = 'clamp_to_edge', internalformat = 'rgba32f'))
+                    + (4, )if self._bufXused[i] else (64,64,4), format= 'rgba', interpolation='linear',wrapping = 'clamp_to_edge', internalformat = 'rgba32f'))
             self._fboX[0].append(gloo.FrameBuffer(self._texX[0][i],
-                    gloo.RenderBuffer(shape=self._output_size[::-1])))
+                    gloo.RenderBuffer(shape=self._output_size[::-1]if self._bufXused[i] else (64,64))))
             self._texX[1].append(gloo.Texture2D(shape=self._output_size[::-1]
-                    + (4, ), format= 'rgba', interpolation='linear',wrapping = 'clamp_to_edge', internalformat = 'rgba32f'))
+                    + (4, )if self._bufXused[i] else (64,64,4), format= 'rgba', interpolation='linear',wrapping = 'clamp_to_edge', internalformat = 'rgba32f'))
             self._fboX[1].append(gloo.FrameBuffer(self._texX[1][i],
-                    gloo.RenderBuffer(shape=self._output_size[::-1])))
+                    gloo.RenderBuffer(shape=self._output_size[::-1]if self._bufXused[i] else (64,64))))
             self._BufX.append(gloo.Program(vertex, fragment_template
                                     % error_shader))
 
