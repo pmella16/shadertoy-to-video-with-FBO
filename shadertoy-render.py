@@ -61,6 +61,9 @@ fragment_template = \
     """
 #version 140
 
+#extension GL_ARB_shader_bit_encoding : enable
+#extension GL_ARB_gpu_shader5 : enable
+
 uniform vec3      iResolution;           // viewport resolution (in pixels)
 uniform float     iGlobalTime;           // shader playback time (in seconds)
 uniform vec4      iMouse;                // mouse pixel coords
@@ -160,6 +163,7 @@ class RenderingCanvas(app.Canvas):
         self._profile = False
         self._doubleFbo = True
         self._doubleFboid = 0
+        self._doubleFboidLast = -1
         self._paused = paused
         self._timer = None
         self._start_time = start_time
@@ -224,8 +228,8 @@ class RenderingCanvas(app.Canvas):
         self.set_Buf_uniform('iFrame' , self._render_frame_index)
         self.set_Buf_uniform('iGlobalTime' , start_time)
         self.set_Buf_uniform('iOffset' , (0., 0.))
-        self.set_Buf_uniform('iResolution' , (self.physical_size[0],
-                    self.physical_size[1], 0.))
+        self.set_Buf_uniform('iResolution' , (self._output_size[0],
+                    self._output_size[1], 0.))
         self.set_Buf_uniform('iTimeDelta' , self._interval)
 
         for x in range(0,max_iTextures):
@@ -320,14 +324,14 @@ class RenderingCanvas(app.Canvas):
         self._fboX.append([])
         
         for i in range(max_iChannels):
-            self._texX[0].append(gloo.Texture2D(shape=self._render_size[::-1]
+            self._texX[0].append(gloo.Texture2D(shape=self._output_size[::-1]
                     + (4, ), format= 'rgba', interpolation='linear',wrapping = 'clamp_to_edge', internalformat = 'rgba32f'))
             self._fboX[0].append(gloo.FrameBuffer(self._texX[0][i],
-                    gloo.RenderBuffer(shape=self._render_size[::-1])))
-            self._texX[1].append(gloo.Texture2D(shape=self._render_size[::-1]
+                    gloo.RenderBuffer(shape=self._output_size[::-1])))
+            self._texX[1].append(gloo.Texture2D(shape=self._output_size[::-1]
                     + (4, ), format= 'rgba', interpolation='linear',wrapping = 'clamp_to_edge', internalformat = 'rgba32f'))
             self._fboX[1].append(gloo.FrameBuffer(self._texX[1][i],
-                    gloo.RenderBuffer(shape=self._render_size[::-1])))
+                    gloo.RenderBuffer(shape=self._output_size[::-1])))
             self._BufX.append(gloo.Program(vertex, fragment_template
                                     % error_shader))
 
@@ -420,7 +424,7 @@ class RenderingCanvas(app.Canvas):
                 with self._fboX[self._doubleFboid][i]:
                     gloo.set_clear_color((0.0, 0.0, 0.0, 0.0))
                     gloo.clear(color=True, depth=True)
-                    gloo.set_viewport(0, 0, *self.physical_size)
+                    gloo.set_viewport(0, 0, *self._output_size)
                     self._BufX[i].draw()
             
             self.program.draw()
@@ -446,12 +450,14 @@ class RenderingCanvas(app.Canvas):
             self.set_channel_input()
             self.set_Buf_channel_input()
         else:
-            for i in range(max_iChannels):
-                with self._fboX[self._doubleFboid][i]:
-                    gloo.set_clear_color((0.0, 0.0, 0.0, 0.0))
-                    gloo.clear(color=True, depth=True)
-                    gloo.set_viewport(0, 0, *self.physical_size)
-                    self._BufX[i].draw()
+            if(self._doubleFboidLast!=self._render_frame_index):
+              self._doubleFboidLast=self._render_frame_index
+              for i in range(max_iChannels):
+                  with self._fboX[self._doubleFboid][i]:
+                      gloo.set_clear_color((0.0, 0.0, 0.0, 0.0))
+                      gloo.clear(color=True, depth=True)
+                      gloo.set_viewport(0, 0, *self._output_size)
+                      self._BufX[i].draw()
                     
             with self._fbo:
                 rs = list(self._render_size)
