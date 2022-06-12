@@ -423,7 +423,7 @@ class RenderingCanvas(app.Canvas):
             for i in range(max_iChannels):
                 with self._fboX[self._doubleFboid][i]:
                     gloo.set_clear_color((0.0, 0.0, 0.0, 0.0))
-                    gloo.clear(color=True, depth=True)
+                    gloo.clear(color=False, depth=True)
                     gloo.set_viewport(0, 0, *self._output_size)
                     self._BufX[i].draw()
             
@@ -455,7 +455,7 @@ class RenderingCanvas(app.Canvas):
               for i in range(max_iChannels):
                   with self._fboX[self._doubleFboid][i]:
                       gloo.set_clear_color((0.0, 0.0, 0.0, 0.0))
-                      gloo.clear(color=True, depth=True)
+                      gloo.clear(color=False, depth=True)
                       gloo.set_viewport(0, 0, *self._output_size)
                       self._BufX[i].draw()
                     
