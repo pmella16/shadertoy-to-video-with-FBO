@@ -7,6 +7,17 @@ shadertoy-render
 
 Nor supported - Cubemaps, Shader-Cubemap, 3d texture, audio and video input also not supported.
 
+**Update 2022:**
+-----------------
+
+``--tile-size=512`` command line argument to enable **tile rendering** (just add it to any render command) - useful when you want render very slow shader for 4k video, or you have very slow GPU. Also useful for Windows OS to avoid driver crash when frames rendered for longer than 2 sec.
+
+*Frames will be rendered in small tiles(set size) per frame so it will load GPU much less than rendering full frame at once.*
+
+**Tile rendering works only on Image shader** (*main_image.glsl* file). Buffers (A-D) still rendered full frame at once. Look commit `d0cd63 <https://github.com/danilw/shadertoy-to-video-with-FBO/commit/d0cd634c117dbf9083ce37df50f0bdfea1f09cb2>`_.
+
+*discard* (shaders) - now works in buffers and Image shaders, all shaders support discard correcrly. But discard will be broken in Image shader (*main_image.glsl* file) when used with `--tile-size` option, so **do not use discard in Image when used tile rendering**.
+
 **Update 2021:**
 -----------------
 
