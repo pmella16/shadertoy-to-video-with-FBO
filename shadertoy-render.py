@@ -174,8 +174,7 @@ class RenderingCanvas(app.Canvas):
 
         if duration:
             assert interval != 'auto'
-            self._render_frame_count = math.ceil(duration / interval) \
-                + 1
+            self._render_frame_count = math.ceil(duration / interval)
         elif not interactive:
             self._render_frame_count = 1
         else:
