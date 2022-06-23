@@ -38,13 +38,9 @@ from watchdog.events import FileSystemEventHandler
 ffmpeg_file="ffmpeg"
 
 if os.name == 'nt':
-    os.environ["GLFW_LIBRARY"] = r"C:\glfw-3.3.2.bin.WIN64\glfw-3.3.2.bin.WIN64\lib-vc2019\glfw3.dll"
     ffmpeg_file="C:/ffmpeg-2021-02-02-git-2367affc2c-full_build/bin/ffmpeg.exe"
-    if(not os.path.exists(os.environ["GLFW_LIBRARY"])):
-      print("Error: file GLFW_LIBRARY does not exist, edit line 41 of shadertoy-render.py")
-      exit()
     if(not os.path.exists(ffmpeg_file)):
-      print("Error: file ffmpeg_file does not exist, edit line 42 of shadertoy-render.py")
+      print("Error: file ffmpeg_file does not exist, edit line 41 of shadertoy-render.py")
       exit()
 
 max_iChannels=4 # equal iChannelXX
@@ -634,11 +630,10 @@ class RenderingCanvas(app.Canvas):
                         self.write_img(self._img, self._progress_file)
 
     def on_resize(self, event):
-        if not self._ffmpeg_pipe:
-            self.activate_zoom()
+        self.activate_zoom()
 
     def activate_zoom(self):
-        if self._interactive:
+        if hasattr(self, "_interactive") and self._interactive:
             gloo.set_viewport(0, 0, *self.physical_size)
             self.program['iResolution'] = (self.physical_size[0],
                     self.physical_size[1], 0.)
@@ -724,7 +719,7 @@ if __name__ == '__main__':
     # GLFW not part of anaconda python distro; works fine with default (PyQt4)
 
     try:
-        vispy.use(app='glfw')
+        vispy.use(app='Glfw', gl="gl+")
     except RuntimeError as e:
         pass
 
