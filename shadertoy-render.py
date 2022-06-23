@@ -40,6 +40,12 @@ ffmpeg_file="ffmpeg"
 if os.name == 'nt':
     os.environ["GLFW_LIBRARY"] = r"C:\glfw-3.3.2.bin.WIN64\glfw-3.3.2.bin.WIN64\lib-vc2019\glfw3.dll"
     ffmpeg_file="C:/ffmpeg-2021-02-02-git-2367affc2c-full_build/bin/ffmpeg.exe"
+    if(not os.path.exists(os.environ["GLFW_LIBRARY"])):
+      print("Error: file GLFW_LIBRARY does not exist, edit line 41 of shadertoy-render.py")
+      exit()
+    if(not os.path.exists(ffmpeg_file)):
+      print("Error: file ffmpeg_file does not exist, edit line 42 of shadertoy-render.py")
+      exit()
 
 max_iChannels=4 # equal iChannelXX
 max_iTextures=4 # equal iTextureXX
