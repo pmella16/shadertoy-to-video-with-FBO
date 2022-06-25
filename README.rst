@@ -23,7 +23,7 @@ My `Youtube playlist <https://youtube.com/playlist?list=PLzDEnfuEGFHv9AF11F0UYXX
 - ``*.webm`` - v8 codec, support alpha
 - ``*.mov`` - frames without compression, support alpha
 
-*Nor supported* - Cubemaps, Shader-Cubemap, 3d texture, audio and video input also not supported. (2d textures without mipmaps)
+*Not supported* - Cubemaps, Shader-Cubemap, 3d texture, audio and video input also not supported. (2d textures without mipmaps)
 
 -----------------
 
