@@ -3,7 +3,7 @@ shadertoy-render
 
 **What is it**: creating video from shaders on Shadertoy. This my fork has many changes and fixes from original.
 
-**Windows OS** support instruction, **how to launch it on Windows OS** scroll down.
+**Windows OS** support instruction, **how to launch it on Windows OS** scroll down. (tested/works on Linux and Windows)
 
 My `Youtube playlist <https://youtube.com/playlist?list=PLzDEnfuEGFHv9AF11F0UYXXx9sdfXqu8M>`_ - videos created from my shaders using this script.
 
