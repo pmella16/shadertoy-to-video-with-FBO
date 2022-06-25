@@ -110,7 +110,7 @@ Windows OS instruction to launch: (tested summer 2022 works)
 4. **download** `ffmpeg-git-full <https://ffmpeg.org/download.html#build-windows>`_ (example - Windows builds from gyan - ffmpeg-git-full.7z) and extract
 5. **download** or clone this **shadertoy-to-video-with-FBO**
 6. open **shadertoy-render.py in text editor**
-7. edit line 41 to location of *ffmpeg.exe* downloaded and extracted on step 5 **notice that / used as separator**
+7. edit line 41 to location of *ffmpeg.exe* downloaded and extracted on step 4 **notice that / used as separator**
 8. press *Win+R* write **cmd** to launch console and launch command, first command path is location of example folder
 
 	> cd C:\\shadertoy-to-video-with-FBO-master\\example_shadertoy_fbo
