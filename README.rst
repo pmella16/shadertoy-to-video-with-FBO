@@ -1,76 +1,96 @@
 shadertoy-render
 ================
 
-**What is it**: creating video from shaders on Shadertoy. Fork from `original <https://github.com/alexjc/shadertoy-render>`_, source code edited.
+**What is it**: creating video from shaders on Shadertoy. This my fork has many changes and fixes from original.
+
+**Windows OS** support instruction, **how to launch it on Windows OS** scroll down.
+
+My `Youtube playlist <https://youtube.com/playlist?list=PLzDEnfuEGFHv9AF11F0UYXXx9sdfXqu8M>`_ - videos created from my shaders using this script.
+
+**Contact**: `Join discord server <https://discord.gg/JKyqWgt>`_
+
+-----------------
 
 **Uploading created video to Twitter/Instagram** - pixel format set to *yuv420p* for *libx264* codec and video can be uploaded to any social platform without problems.
 
-Nor supported - Cubemaps, Shader-Cubemap, 3d texture, audio and video input also not supported.
-
-**Update 2022:**
 -----------------
 
-``--tile-size=512`` command line argument to enable **tile rendering** (just add it to any render command) - useful when you want render very slow shader for 4k video, or you have very slow GPU. Also useful for Windows OS to avoid driver crash when frames rendered for longer than 2 sec.
+**Supported** - Buffers A-D same as on Shadertoy. Images. ``discard`` supported in buffers and image shader.
 
-*Frames will be rendered in small tiles(set size) per frame so it will load GPU much less than rendering full frame at once.*
+**Supported** recording video format: (look line `832 in shadertoy-render.py <https://github.com/danilw/shadertoy-to-video-with-FBO/blob/master/shadertoy-render.py#L832>`_ for encoding parameters)
 
-**Tile rendering works only on Image shader** (*main_image.glsl* file). Buffers (A-D) still rendered full frame at once. Look commit `d0cd63 <https://github.com/danilw/shadertoy-to-video-with-FBO/commit/d0cd634c117dbf9083ce37df50f0bdfea1f09cb2>`_.
+- ``*.mp4`` - h264, alpha ignored
+- ``*.webm`` - v8 codec, support alpha
+- ``*.mov`` - frames without compression, support alpha
 
-*discard* (shaders) - now works in buffers and Image shaders, all shaders support discard correcrly. But discard will be broken in Image shader (*main_image.glsl* file) when used with `--tile-size` option, so **do not use discard in Image when used tile rendering**.
+*Nor supported* - Cubemaps, Shader-Cubemap, 3d texture, audio and video input also not supported. (2d textures without mipmaps)
 
-**Update 2021:**
 -----------------
 
-Added Windows OS support instruction, **how to launch it on Windows OS** scroll down.
-
-Added correct test for buffers queue *example_shadertoy_fbo*.
-
-TODO - il develop better "shader recorder" using Vulkan and implementing all missing featres (audio/video/cubemaps/etc). That will be completely new project, this project is done.
-
-**Look for useful ffmpeg commands below.** (also method of saving single frame(png with alpha) described there)
-
-
-**Changes from original**:
-
-1. added texture support, textures in **<0.png to 3.png> bind to iTexture<0-3>**
-2. added FrameBuffers, same to Buffer<A-D> on Shadertoy, **file name Buf<0-3>.glsl**, bind to *iChannel<0-3>* and *u_channel<0-3>*
-3. added encoding to \*.mov (frames without compression), \*.webm (v8 codec), both format **support RGBA** (video with alpha), added *--bitrate* option to set video bitrate(format 1M 2M..etc)
-4. fixed iTime(start from 0 on shader launch), iFrame work, iTimeDelta, and other
-
-**Warning, when result video does not look the same as on Shadertoy:**
-
-Many shaders(even top rated) on Shadertoy may use lots of unitialized variables and clamp(1,0,-1)/pow(-1,-1)/(0/0)/...etc, that work in not same way(have not same result) in OpenGL and webbrowser Angle/GLES, black screen(or other random "results") because of this. 
-
-Also **remember to set Alpha in main_image.glsl** when recording rgba video.
-
-And check for used **buffers and textures parameters**, this script has *clamp_to_edge* with *linear* interpolation for buffers, and *repeat* with *linear* without *y-flip* for textures, Mipmaps not supported.
-
-Example
+**Shader uniforms:**
 -----------------
 
-each shader(buffer) use static bindings iChannel0->Buf0.glsl, iChannel1->Buf1.glsl, iChannel2->Buf2.glsl, iChannel3->Buf3.glsl, also **added renamed copy of each channel** *sampler2D u_channel<0-3>*, to rebind inside of .glsl shader(using define)
+``iChannel0 to iChannel3`` uniform is **Buf0.glsl to Buf3.glsl file**.
 
-if you need "change" channel order for shader, use in .glsl file (example set BufA as BufC, and BufC as Texture0(0.png file))
+``iTexture0 to iTexture3`` uniform is **0.png to 3.png file**
+
+if you want/need **to change order of iChannels** - added renamed copy ``u_channel0`` to ``u_channel3`` uniform
 
 .. code-block:: C
 
 	#define iChannel0 u_channel3
 	#define iChannel3 iTexture0
 	
-	
-use same way to bind iTexture<0-3> as iChannel<0-3> *#define iChannel0 iTexture0*
+-----------------
 
-**check examples folders**, command to encode example:
+**Examples:**
+-----------------
+
+**example_one_shader** - New shader on Shadertoy, single shader example.
+
+**example_shadertoy_fbo** - test for Buffer queue order to be same as on Shadertoy, `Shadertoy link src <https://www.shadertoy.com/view/WlcBWr>`_ webm video recorded with RGBA and test for correct buffers queue `video link <https://danilw.github.io/GLSL-howto/shadertoy-render/video_with_alpha_result.webm>`_
+
+**example_textures** - example using textures.
+
+Command to encode example:
 
 .. code-block:: bash
 
-	 cd example_shadertoy_fbo
 	 python3 ../shadertoy-render.py --output 1.mp4 --size=800x450 --rate=30 --duration=5.0 --bitrate=5M main_image.glsl
 
-to record \*.mov or \*.webm just change output file to *.webm* or *.mov*
+-----------------
 
-**Example_shadertoy_fbo** `shadertoy link src <https://www.shadertoy.com/view/WlcBWr>`_ webm video recorded with RGBA and test for correct buffers queue `video link <https://danilw.github.io/GLSL-howto/shadertoy-render/video_with_alpha_result.webm>`_
+**Command line options:**
+-----------------
 
+``--output 1.mp4`` - file name for video file.
+
+``--size=800x450`` - resolution of video for recording, for 1080p set ``1920x1080``
+
+``--rate=30`` - frame rate, FPS for shader
+
+``--duration=5.0`` - duration in seconds, support fractional part of second example ``2.5`` two sec and 500ms (half of second)
+
+``--bitrate=5M`` - bitrate of video, used only for ``mp4`` and ``webm`` file format
+
+``--tile-size=512`` **tile rendering** - useful when you want render very slow shader for 4k video, or you have very slow GPU. Also useful for Windows OS to avoid driver crash when frames rendered for longer than 2 sec.
+
+**Tile rendering works only on Image shader** (``main_image.glsl`` file). Buffers (A-D) still rendered full frame at once. (*also remember* that ``discard`` in shader will be broken when used tile rendering) 
+
+-----------------
+
+**When recording visual result not equal to Shadertoy:**
+-----------------
+
+Many shaders(even top rated) on Shadertoy may use lots of unitialized variables and clamp(1,0,-1)/pow(-1,2)/(0/0)/normalize(0)...etc, that work in not same way(have not same result) in OpenGL and webbrowser Angle/GLES, black screen(or other random "results") because of this. (also sin-noise could be broken in OpenGL) 
+
+**The only way to fix your shader** - is hand debugging and fixing all bugs.
+
+Also **remember to set Alpha in main_image.glsl** when recording rgba video.
+
+And check for used **buffers and textures parameters**, this script has *clamp_to_edge* with *linear* interpolation for buffers, and *repeat* with *linear* without *y-flip* for textures, Mipmaps not supported.
+
+-----------------
 
 Windows OS instruction to launch: (tested summer 2022 works)
 -----------------
@@ -82,11 +102,8 @@ Windows OS instruction to launch: (tested summer 2022 works)
 .. code-block:: bash
 	
 	pip install vispy
-	
 	pip install watchdog
-	
 	pip install glfw
-	
 	pip install Pillow
 
 4. **download** `ffmpeg-git-full <https://ffmpeg.org/download.html#build-windows>`_ (example - Windows builds from gyan - ffmpeg-git-full.7z) and extract
@@ -99,6 +116,7 @@ Windows OS instruction to launch: (tested summer 2022 works)
 	
 	> python ../shadertoy-render.py --output 1.mp4 --size=800x450 --rate=30 --duration=5.0 --bitrate=5M main_image.glsl
 
+-----------------
 
 Useful ffmpeg commands:
 -----------------
