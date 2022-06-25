@@ -55,6 +55,7 @@ if you want/need **to change order of iChannels** - added renamed copy ``u_chann
 Command to encode example:
 
 .. code-block:: bash
+
          cd example_shadertoy_fbo
 	 python3 ../shadertoy-render.py --output 1.mp4 --size=800x450 --rate=30 --duration=5.0 --bitrate=5M main_image.glsl
 
