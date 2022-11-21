@@ -148,3 +148,19 @@ not best quality (work on Windows and Linux)
 
         ffmpeg -i video.mp4 -vf "fps=25,scale=640:-1:flags=lanczos" output.gif
 
+-----------------
+
+Useful ImageMagic commands:
+-----------------
+
+image information `identify docs <https://imagemagick.org/script/identify.php>`_
+
+.. code-block:: bash
+
+       magick identify -verbose 1.png
+
+Cut corners on image, with correct png color format
+
+.. code-block:: bash
+
+        convert '1.png' -colorspace sRGB -define png:format=png32 -define png:color-type=6 -gravity center -background transparent -extent 2048x2048 '1.png'
