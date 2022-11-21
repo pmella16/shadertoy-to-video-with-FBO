@@ -53,7 +53,7 @@ except ImportError:
 
 vertex = \
     """
-#version 140
+#version 150
 #extension GL_ARB_shader_bit_encoding : enable
 #extension GL_ARB_gpu_shader5 : enable
 
@@ -66,7 +66,7 @@ void main()
 
 fragment_template = \
     """
-#version 140
+#version 150
 
 #extension GL_ARB_shader_bit_encoding : enable
 #extension GL_ARB_gpu_shader5 : enable
