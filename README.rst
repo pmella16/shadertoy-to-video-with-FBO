@@ -106,6 +106,7 @@ Windows OS instruction to launch: (tested summer 2022 works)
 	pip install watchdog
 	pip install glfw
 	pip install Pillow
+	pip install imageio
 
 4. **download** `ffmpeg-git-full <https://ffmpeg.org/download.html#build-windows>`_ (example - Windows builds from gyan - ffmpeg-git-full.7z) and extract
 5. **download** or clone this **shadertoy-to-video-with-FBO**
