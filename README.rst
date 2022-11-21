@@ -157,7 +157,7 @@ image information `identify docs <https://imagemagick.org/script/identify.php>`_
 
 .. code-block:: bash
 
-       magick identify -verbose 1.png
+        magick identify -verbose 1.png
 
 Cut corners on image, with correct png color format
 
