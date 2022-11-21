@@ -23,7 +23,9 @@ My `Youtube playlist <https://youtube.com/playlist?list=PLzDEnfuEGFHv9AF11F0UYXX
 - ``*.webm`` - v8 codec, support alpha
 - ``*.mov`` - frames without compression, support alpha
 
-*Not supported* - Cubemaps, Shader-Cubemap, 3d texture, audio and video input also not supported. (2d textures without mipmaps)
+**Supported** - video input (instead of texture), look **example_video_input** description below.
+
+*Not supported* - Cubemaps, Shader-Cubemap, 3d texture, audio input not supported. (2d textures without mipmaps)
 
 -----------------
 
@@ -51,6 +53,8 @@ if you want/need **to change order of iChannels** - added renamed copy ``u_chann
 **example_shadertoy_fbo** - test for Buffer queue order to be same as on Shadertoy, `Shadertoy link src <https://www.shadertoy.com/view/WlcBWr>`_ webm video recorded with RGBA and test for correct buffers queue `video link <https://danilw.github.io/GLSL-howto/shadertoy-render/video_with_alpha_result.webm>`_
 
 **example_textures** - example using textures. *Shadertoy textures* can be found on `Shadertoy Unofficial <https://shadertoyunofficial.wordpress.com/2019/07/23/shadertoy-media-files/>`_
+
+**example_video_input** - example for video input. You need to convert/extract video to "png frames". Look *render.sh* file in *example_video_input* for recording and converting comands. *Output result of this example expected to be "V-flipped"*, v-flip your texture in shader if needed.
 
 Command to encode example:
 
