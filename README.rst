@@ -159,7 +159,7 @@ image information `identify docs <https://imagemagick.org/script/identify.php>`_
 
         magick identify -verbose 1.png
 
-Cut corners on image, with correct png color format
+Cut corners on image, with correct RGBA png color format:
 
 .. code-block:: bash
 
