@@ -46,6 +46,11 @@ if os.name == 'nt':
 max_iChannels=4 # equal iChannelXX
 max_iTextures=4 # equal iTextureXX
 
+try:
+  import imageio as iio
+except ImportError:
+  print("not using imageio")
+
 vertex = \
     """
 #version 140
@@ -232,11 +237,19 @@ class RenderingCanvas(app.Canvas):
         self.set_Buf_uniform('iResolution' , (self._output_size[0],
                     self._output_size[1], 0.))
         self.set_Buf_uniform('iTimeDelta' , self._interval)
-
+        
+        video_path_prefix = "video_frames_"
         for x in range(0,max_iTextures):
+            tfile_name = str(x)+'.png'
+            if(os.path.exists(video_path_prefix+str(x))):
+                tfile_name = video_path_prefix+str(x)+os.sep+str(self._render_frame_index+1)+'.png'
             try:
-                self.set_texture_input(read_png(str(x)+'.png'), i=x)
-                self.set_Buf_texture_input(read_png(str(x)+'.png'), i=x)
+                try:
+                  self.set_texture_input(iio.v2.imread(tfile_name), i=x)
+                  self.set_Buf_texture_input(iio.v2.imread(tfile_name), i=x)
+                except NameError:
+                  self.set_texture_input(read_png(tfile_name), i=x)
+                  self.set_Buf_texture_input(read_png(tfile_name), i=x)
             except FileNotFoundError:
                 self.set_texture_input(noise(resolution=2, nchannels=3), i=x)
                 self.set_Buf_texture_input(noise(resolution=2, nchannels=3), i=x)
@@ -617,6 +630,22 @@ class RenderingCanvas(app.Canvas):
                     self._tile_coord = [0, 0]
 
                     self.advance_time()
+                    
+                    # video recording
+                    # ---------------------
+                    video_path_prefix = "video_frames_"
+                    for x in range(0,max_iTextures):
+                        if(os.path.exists(video_path_prefix+str(x))):
+                            try:
+                                timg = iio.v2.imread(video_path_prefix+str(x)+os.sep+str(self._render_frame_index+1)+'.png')
+                                self.set_texture_input(timg, i=x)
+                                self.set_Buf_texture_input(timg, i=x)
+                            except FileNotFoundError:
+                                pass
+                            except NameError:
+                                print("NO video recording, video recording works only when imageio installed, pip install imageio")
+                    # ---------------------
+                    
                 else:
                     self.write_img(self._img, self._output)
                     app.quit()
