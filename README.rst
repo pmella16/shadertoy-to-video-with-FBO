@@ -154,6 +154,8 @@ not best quality (work on Windows and Linux)
 Useful ImageMagic commands:
 -----------------
 
+When used `import imageio` in Python script - imageio does not support indexed color, and `convert` or `ffmpeg` sometime can convert images to indexed format, look "correct RGBA png color format" below to convert back.
+
 image information `identify docs <https://imagemagick.org/script/identify.php>`_
 
 .. code-block:: bash
