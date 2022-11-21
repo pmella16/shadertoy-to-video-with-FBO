@@ -54,14 +54,14 @@ if you want/need **to change order of iChannels** - added renamed copy ``u_chann
 
 **example_textures** - example using textures. *Shadertoy textures* can be found on `Shadertoy Unofficial <https://shadertoyunofficial.wordpress.com/2019/07/23/shadertoy-media-files/>`_
 
-**example_video_input** - example for video input. You need to convert/extract video to "png frames". Look *render.sh* file in *example_video_input* for recording and converting comands. *Output result of this example expected to be "V-flipped"*, v-flip your texture in shader if needed.
-
 Command to encode example:
 
 .. code-block:: bash
 
          cd example_shadertoy_fbo
 	 python3 ../shadertoy-render.py --output 1.mp4 --size=800x450 --rate=30 --duration=5.0 --bitrate=5M main_image.glsl
+
+**example_video_input** - example for video input. You need to convert/extract video to "png frames". **Look *render.sh* file in *example_video_input* for recording and converting comands**. *Output result of this example expected to be "V-flipped"*, v-flip your texture in shader if needed.
 
 -----------------
 
