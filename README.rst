@@ -46,13 +46,11 @@ if you want/need **to change order of iChannels** - added renamed copy ``u_chann
 **Examples:**
 -----------------
 
-*shadertoy textures* can be found on [Shadertoy Unofficial](https://shadertoyunofficial.wordpress.com/2019/07/23/shadertoy-media-files/)
-
 **example_one_shader** - New shader on Shadertoy, single shader example.
 
 **example_shadertoy_fbo** - test for Buffer queue order to be same as on Shadertoy, `Shadertoy link src <https://www.shadertoy.com/view/WlcBWr>`_ webm video recorded with RGBA and test for correct buffers queue `video link <https://danilw.github.io/GLSL-howto/shadertoy-render/video_with_alpha_result.webm>`_
 
-**example_textures** - example using textures.
+**example_textures** - example using textures. *Shadertoy textures* can be found on `Shadertoy Unofficial <https://shadertoyunofficial.wordpress.com/2019/07/23/shadertoy-media-files/>`_
 
 Command to encode example:
 
