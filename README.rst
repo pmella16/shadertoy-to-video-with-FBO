@@ -158,6 +158,8 @@ not best quality (work on Windows and Linux)
 Useful ImageMagic commands:
 -----------------
 
+**When recording cubemap** (from 6 sides) - remember to set *rep=False* in functions *set_Buf_texture_input* and *set_texture_input* in *shadertoy-render.py*, to set texture as clamp_to_edge.
+
 When used *import imageio* in Python script - *imageio* does not support indexed color, and *convert* or *ffmpeg* sometime can convert images to indexed format, look *"correct RGBA png color format"* below to convert back.
 
 image information `identify docs <https://imagemagick.org/script/identify.php>`_
