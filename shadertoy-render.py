@@ -245,8 +245,12 @@ class RenderingCanvas(app.Canvas):
                 tfile_name = video_path_prefix+str(x)+os.sep+str(self._render_frame_index+1)+'.png'
             try:
                 try:
-                  self.set_texture_input(iio.v2.imread(tfile_name), i=x)
-                  self.set_Buf_texture_input(iio.v2.imread(tfile_name), i=x)
+                  try:
+                      self.set_texture_input(iio.v2.imread(tfile_name), i=x)
+                      self.set_Buf_texture_input(iio.v2.imread(tfile_name), i=x)
+                  except AttributeError:
+                      self.set_texture_input(iio.imread(tfile_name), i=x)
+                      self.set_Buf_texture_input(iio.imread(tfile_name), i=x)
                 except NameError:
                   self.set_texture_input(read_png(tfile_name), i=x)
                   self.set_Buf_texture_input(read_png(tfile_name), i=x)
@@ -637,7 +641,10 @@ class RenderingCanvas(app.Canvas):
                     for x in range(0,max_iTextures):
                         if(os.path.exists(video_path_prefix+str(x))):
                             try:
-                                timg = iio.v2.imread(video_path_prefix+str(x)+os.sep+str(self._render_frame_index+1)+'.png')
+                                try:
+                                    timg = iio.v2.imread(video_path_prefix+str(x)+os.sep+str(self._render_frame_index+1)+'.png')
+                                except AttributeError:
+                                    timg = iio.imread(video_path_prefix+str(x)+os.sep+str(self._render_frame_index+1)+'.png')
                                 self.set_texture_input(timg, i=x)
                                 self.set_Buf_texture_input(timg, i=x)
                             except FileNotFoundError:
