@@ -17,7 +17,7 @@ My `Youtube playlist <https://youtube.com/playlist?list=PLzDEnfuEGFHv9AF11F0UYXX
 
 **Supported** - Buffers A-D same as on Shadertoy. Images. ``discard`` supported in buffers and image shader.
 
-**Supported** recording video format: (look line `832 in shadertoy-render.py <https://github.com/danilw/shadertoy-to-video-with-FBO/blob/master/shadertoy-render.py#L832>`_ for encoding parameters)
+**Supported** recording video format: (look line `832 in shadertoy-render.py <https://github.com/danilw/shadertoy-to-video-with-FBO/blob/master/shadertoy-render.py#L895>`_ for encoding parameters)
 
 - ``*.mp4`` - h264, alpha ignored
 - ``*.webm`` - v8 codec, support alpha
