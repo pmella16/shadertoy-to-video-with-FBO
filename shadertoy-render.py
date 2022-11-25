@@ -51,6 +51,12 @@ try:
 except ImportError:
   print("not using imageio")
 
+try:
+  import google.colab
+  IN_COLAB = True
+except:
+  IN_COLAB = False
+
 vertex = \
     """
 #version 140
@@ -774,7 +780,10 @@ if __name__ == '__main__':
     # GLFW not part of anaconda python distro; works fine with default (PyQt4)
 
     try:
-        vispy.use(app='Glfw', gl="gl+")
+        if(IN_COLAB):
+          vispy.use('egl')
+        else:
+          vispy.use(app='Glfw', gl="gl+")
     except RuntimeError as e:
         pass
 
