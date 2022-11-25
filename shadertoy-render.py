@@ -43,8 +43,8 @@ if os.name == 'nt':
       print("Error: file ffmpeg_file does not exist, edit line 41 of shadertoy-render.py")
       exit()
 
-max_iChannels=4 # equal iChannelXX
-max_iTextures=4 # equal iTextureXX
+max_iChannels=6 # equal iChannelXX
+max_iTextures=6 # equal iTextureXX
 
 try:
   import imageio as iio
@@ -80,17 +80,23 @@ uniform sampler2D iChannel0;             // input channel
 uniform sampler2D iChannel1;             // input channel
 uniform sampler2D iChannel2;             // input channel
 uniform sampler2D iChannel3;             // input channel
+uniform sampler2D iChannel4;             // input channel
+uniform sampler2D iChannel5;             // input channel
 uniform sampler2D u_channel0;             // input channel
 uniform sampler2D u_channel1;             // input channel
 uniform sampler2D u_channel2;             // input channel
 uniform sampler2D u_channel3;             // input channel
+uniform sampler2D u_channel4;             // input channel
+uniform sampler2D u_channel5;             // input channel
 uniform sampler2D iTexture0;             // input channel
 uniform sampler2D iTexture1;             // input channel
 uniform sampler2D iTexture2;             // input channel
 uniform sampler2D iTexture3;             // input channel
-uniform vec3      iChannelResolution[4]; // channel resolution (in pixels)
-uniform vec3      iTextureResolution[4]; // channel resolution (in pixels)
-uniform float     iChannelTime[4];       // channel playback time (in sec)
+uniform sampler2D iTexture4;             // input channel
+uniform sampler2D iTexture5;             // input channel
+uniform vec3      iChannelResolution[6]; // channel resolution (in pixels)
+uniform vec3      iTextureResolution[6]; // channel resolution (in pixels)
+uniform float     iChannelTime[6];       // channel playback time (in sec)
 uniform vec2      iOffset;               // pixel offset for tiled rendering
 uniform int       iFrame; 
 uniform float     iTimeDelta; 
@@ -141,6 +147,9 @@ class RenderingCanvas(app.Canvas):
         render_size=None,
         position=None,
         start_time=0.,
+        render_and_skip_frames=0,
+        cube_render = False,
+        cube_final_render_size = None,
         interval='auto',
         duration=None,
         always_on_top=False,
@@ -153,7 +162,7 @@ class RenderingCanvas(app.Canvas):
         app.Canvas.__init__(
             self,
             keys=('interactive' if interactive else None),
-            size=(render_size if render_size else output_size),
+            size=(render_size if render_size else (cube_final_render_size if cube_render else output_size)),
             position=None,
             title=filename,
             always_on_top=always_on_top,
@@ -165,7 +174,7 @@ class RenderingCanvas(app.Canvas):
         self._interactive = interactive
         self._output_size = output_size
         self._render_size = \
-            (render_size if render_size else output_size)
+            (render_size if render_size else (cube_final_render_size if cube_render else output_size))
         self._output = output
         self._profile = False
         self._doubleFbo = True
@@ -176,12 +185,16 @@ class RenderingCanvas(app.Canvas):
         self._start_time = start_time
         self._interval = interval
         self._ffmpeg_pipe = ffmpeg_pipe
+        self._pre_render_iframe = 0
+        self._total_to_pre_render_iframe = render_and_skip_frames
+        self._cube_render = cube_render
+        self._cube_final_render_size = cube_final_render_size
 
         # Determine number of frames to render
 
         if duration:
             assert interval != 'auto'
-            self._render_frame_count = math.ceil(duration / interval)
+            self._render_frame_count = math.ceil(duration / interval)+self._total_to_pre_render_iframe 
         elif not interactive:
             self._render_frame_count = 1
         else:
@@ -267,8 +280,8 @@ class RenderingCanvas(app.Canvas):
             self.show()
         else:
             self._tile_index = 0
-            self._tile_count = (output_size[0] + render_size[0] - 1) \
-                // render_size[0] * ((output_size[1] + render_size[1]
+            self._tile_count = ((self._cube_final_render_size if self._cube_render else self._output_size)[0] + render_size[0] - 1) \
+                // render_size[0] * (((self._cube_final_render_size if self._cube_render else self._output_size)[1] + render_size[1]
                     - 1) // render_size[1])
             self._tile_coord = [0, 0]
             self._progress_file = progress_file
@@ -283,7 +296,7 @@ class RenderingCanvas(app.Canvas):
 
             # Allocate buffer to hold final image
 
-            self._img = numpy.zeros(shape=self._output_size[::-1] + (4,
+            self._img = numpy.zeros(shape=(self._cube_final_render_size if self._cube_render else self._output_size)[::-1] + (4,
                                     ), dtype=numpy.uint8)
 
             # Write progress file now so we'll know right away if there are any problems writing to it
@@ -291,7 +304,7 @@ class RenderingCanvas(app.Canvas):
             if self._progress_file:
                 self.write_img(self._img, self._progress_file)
 
-            self.program['iResolution'] = self._output_size + (0., )
+            self.program['iResolution'] = (self._cube_final_render_size if self._cube_render else self._output_size) + (0., )
             self.ensure_timer()
             
             
@@ -385,8 +398,8 @@ class RenderingCanvas(app.Canvas):
                     self._BufX[i]['iGlobalTime'] = self.program['iGlobalTime']
 
     def write_video_frame(self, img):
-        if img.shape[0] != self._output_size[1] or img.shape[1] \
-            != self._output_size[0]:
+        if img.shape[0] != (self._cube_final_render_size[1] if self._cube_render else self._output_size[1]) or img.shape[1] \
+            != (self._cube_final_render_size[0] if self._cube_render else self._output_size[0]):
             warn('Frame data is wrong size! Video will be corrupted.')
 
         self._ffmpeg_pipe.write(img.tobytes())
@@ -482,18 +495,18 @@ class RenderingCanvas(app.Canvas):
             with self._fbo:
                 rs = list(self._render_size)
 
-                if self._tile_coord[0] + rs[0] > self._output_size[0]:
-                    rs[0] = self._output_size[0] - self._tile_coord[0]
+                if self._tile_coord[0] + rs[0] > (self._cube_final_render_size if self._cube_render else self._output_size)[0]:
+                    rs[0] = (self._cube_final_render_size if self._cube_render else self._output_size)[0] - self._tile_coord[0]
 
-                if self._tile_coord[1] + rs[1] > self._output_size[1]:
-                    rs[1] = self._output_size[1] - self._tile_coord[1]
+                if self._tile_coord[1] + rs[1] > (self._cube_final_render_size if self._cube_render else self._output_size)[1]:
+                    rs[1] = (self._cube_final_render_size if self._cube_render else self._output_size)[1] - self._tile_coord[1]
 
                 gloo.set_viewport(0, 0, *rs)
                 self.program['iOffset'] = self._tile_coord
                 self.program.draw()
                 
                 img = _screenshot()
-                row = self._output_size[1] - self._tile_coord[1] - rs[1]
+                row = (self._cube_final_render_size if self._cube_render else self._output_size)[1] - self._tile_coord[1] - rs[1]
                 col = self._tile_coord[0]
                 self._img[row:row + rs[1], col:col + rs[0], :] = img
                 
@@ -613,7 +626,10 @@ class RenderingCanvas(app.Canvas):
                 ))
             if self._tile_index == self._tile_count:
                 if self._ffmpeg_pipe:
-                    self.write_video_frame(self._img)
+                    if(self._pre_render_iframe>=self._total_to_pre_render_iframe):
+                      self.write_video_frame(self._img)
+                    else:
+                      print("skip_frame "+str(self._pre_render_iframe))
                     self._render_frame_index += 1
                     self._doubleFbo = not self._doubleFbo
                     self._doubleFboid=(0 if self._doubleFbo else 1)
@@ -633,7 +649,10 @@ class RenderingCanvas(app.Canvas):
                     self._tile_index = 0
                     self._tile_coord = [0, 0]
 
-                    self.advance_time()
+                    if(self._pre_render_iframe>=self._total_to_pre_render_iframe):
+                      self.advance_time()
+                    else:
+                      self._pre_render_iframe+=1
                     
                     # video recording
                     # ---------------------
@@ -659,7 +678,7 @@ class RenderingCanvas(app.Canvas):
                     return
             else:
                 self._tile_coord[0] += self._render_size[0]
-                if self._tile_coord[0] >= self._output_size[0]:
+                if self._tile_coord[0] >= (self._cube_final_render_size if self._cube_render else self._output_size)[0]:
                     self._tile_coord[0] = 0
                     self._tile_coord[1] += self._render_size[1]
                     if self._progress_file:
@@ -803,10 +822,19 @@ if __name__ == '__main__':
                         ,
                         help='Call subprocess with a high logging level.'
                         )
+    parser.add_argument('--render_and_skip_frames', type=int, default=0,
+                        help='Number of frames to skip(render but not recrod), 0 is no skip(default) (int). \n iTime is 0 on all skipped frames, BUT iFrame will process/count skipped frames.'
+                        )
+    parser.add_argument('--panorama_rec_size', type=str, default=None,
+    help='Cubemap final video size, e.g. 1920x1080 (string). When set - --size used as cube side size.'
+    )
 
     args = parser.parse_args()
 
     resolution = tuple(int(i) for i in args.size.split('x'))
+    cube_final_render_size = None
+    if(args.panorama_rec_size):
+      cube_final_render_size = tuple(int(i) for i in args.panorama_rec_size.split('x'))
     position = (tuple(int(i) for i in args.pos.split(',')) if args.pos
                 is not None else None)
 
@@ -873,7 +901,7 @@ if __name__ == '__main__':
                 '-f', 'rawvideo',
                 '-threads', '4',
                 '-pix_fmt', 'rgba',
-                '-s', args.size,
+                '-s', args.panorama_rec_size if args.panorama_rec_size!=None else args.sizee,
                 '-i', '-',
                 '-c:v', 'qtrle',
                 '-y', args.output,
@@ -888,7 +916,7 @@ if __name__ == '__main__':
                     '-threads', '4',
                     '-speed', '0',
                     '-pix_fmt', 'rgba',
-                    '-s', args.size,
+                    '-s', args.panorama_rec_size if args.panorama_rec_size!=None else args.size,
                     '-i', '-',
                     '-c:v', 'vp8',
                     '-auto-alt-ref', '0',
@@ -904,7 +932,7 @@ if __name__ == '__main__':
                     '-r', '%d' % args.rate,
                     '-f', 'rawvideo',
                     '-pix_fmt', 'rgba',
-                    '-s', args.size,
+                    '-s', args.panorama_rec_size if args.panorama_rec_size!=None else args.size,
                     '-i', '-',
                     '-pix_fmt', 'yuv420p',
                     '-movflags', '+faststart',
@@ -921,9 +949,14 @@ if __name__ == '__main__':
         interactive=args.interactive,
         output_size=resolution,
         render_size=((args.tile_size, )
-                     * 2 if args.tile_size else resolution),
+                     * 2 if args.tile_size else (cube_final_render_size if args.panorama_rec_size!=None else resolution)),
         position=position,
         start_time=args.time,
+        
+        render_and_skip_frames=args.render_and_skip_frames,
+        cube_render = args.panorama_rec_size!=None,
+        cube_final_render_size = cube_final_render_size,
+        
         interval=interval,
         duration=args.duration,
         always_on_top=args.top,
