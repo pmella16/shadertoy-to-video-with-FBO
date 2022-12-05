@@ -642,7 +642,7 @@ class RenderingCanvas(app.Canvas):
                 str(datetime.timedelta(seconds=round(clock_time_elapsed))),
                 str(datetime.timedelta(seconds=round(clock_time_remain))),
                 str(datetime.timedelta(seconds=round(clock_time_total))),
-                ) + skip_frames_ctr, end='\r')
+                ) + skip_frames_ctr) #, end='\r')
             if self._tile_index == self._tile_count:
                 if self._ffmpeg_pipe:
                     if(self._pre_render_iframe>=self._total_to_pre_render_iframe):
