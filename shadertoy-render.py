@@ -154,6 +154,7 @@ class RenderingCanvas(app.Canvas):
         position=None,
         start_time=0.,
         render_and_skip_frames=0,
+        skip_frames_every_frame=0,
         cube_render = False,
         cube_final_render_size = None,
         interval='auto',
@@ -192,7 +193,9 @@ class RenderingCanvas(app.Canvas):
         self._interval = interval
         self._ffmpeg_pipe = ffmpeg_pipe
         self._pre_render_iframe = 0
+        self._skip_ef_render_iframe = 0
         self._total_to_pre_render_iframe = render_and_skip_frames
+        self._total_to_skip_ef_render_iframe = skip_frames_every_frame
         self._cube_render = cube_render
         self._cube_final_render_size = cube_final_render_size
 
@@ -200,7 +203,7 @@ class RenderingCanvas(app.Canvas):
 
         if duration:
             assert interval != 'auto'
-            self._render_frame_count = math.ceil(duration / interval)+self._total_to_pre_render_iframe 
+            self._render_frame_count = math.ceil(duration / interval)+self._total_to_pre_render_iframe+self._total_to_skip_ef_render_iframe*math.ceil(duration / interval)
         elif not interactive:
             self._render_frame_count = 1
         else:
@@ -621,7 +624,17 @@ class RenderingCanvas(app.Canvas):
             clock_time_total = clock_time_per_tile * total_tile_count
             clock_time_remain = clock_time_total - clock_time_elapsed
 
-            print('Tile %d / %d (%.2f%%); %s elapsed; %s remaining; %s total'
+            bar_length = 10
+            bar_length_unit_value = (total_tile_count / bar_length)
+            completed_bar_part = math.ceil(rendered_tile_count / bar_length_unit_value)
+            progress = "*" * completed_bar_part
+            remaining = " " * (bar_length - completed_bar_part)
+            skip_frames_ctr = ""
+            if(self._total_to_pre_render_iframe>0):
+              skip_frames_ctr+=" s|%d/%d|" % (self._pre_render_iframe, self._total_to_pre_render_iframe)
+            if(self._total_to_skip_ef_render_iframe>0):
+              skip_frames_ctr+=" ef|%d/%d|" % (self._skip_ef_render_iframe, self._total_to_skip_ef_render_iframe)
+            print(f'Tile %d / %d [{progress}{remaining}] (%.2f%%); %s elapsed; %s remaining; %s total'
                    % (
                 rendered_tile_count,
                 total_tile_count,
@@ -629,13 +642,12 @@ class RenderingCanvas(app.Canvas):
                 str(datetime.timedelta(seconds=round(clock_time_elapsed))),
                 str(datetime.timedelta(seconds=round(clock_time_remain))),
                 str(datetime.timedelta(seconds=round(clock_time_total))),
-                ))
+                ) + skip_frames_ctr, end='\r')
             if self._tile_index == self._tile_count:
                 if self._ffmpeg_pipe:
                     if(self._pre_render_iframe>=self._total_to_pre_render_iframe):
-                      self.write_video_frame(self._img)
-                    else:
-                      print("skip_frame "+str(self._pre_render_iframe))
+                      if(self._skip_ef_render_iframe>=self._total_to_skip_ef_render_iframe):
+                        self.write_video_frame(self._img)
                     self._render_frame_index += 1
                     self._doubleFbo = not self._doubleFbo
                     self._doubleFboid=(0 if self._doubleFbo else 1)
@@ -656,7 +668,11 @@ class RenderingCanvas(app.Canvas):
                     self._tile_coord = [0, 0]
 
                     if(self._pre_render_iframe>=self._total_to_pre_render_iframe):
-                      self.advance_time()
+                      if(self._skip_ef_render_iframe>=self._total_to_skip_ef_render_iframe):
+                        self.advance_time()
+                        self._skip_ef_render_iframe=0
+                      else:
+                        self._skip_ef_render_iframe+=1
                     else:
                       self._pre_render_iframe+=1
                     
@@ -834,6 +850,9 @@ if __name__ == '__main__':
     parser.add_argument('--render_and_skip_frames', type=int, default=0,
                         help='Number of frames to skip(render but not recrod), 0 is no skip(default) (int). \n iTime is 0 on all skipped frames, BUT iFrame will process/count skipped frames.'
                         )
+    parser.add_argument('--skip_frames_every_frame', type=int, default=0,
+                        help='Skip Number of frames every frame. (for TAA etc)'
+                        )
     parser.add_argument('--panorama_rec_size', type=str, default=None,
     help='Cubemap final video size, e.g. 1920x1080 (string). When set - --size used as cube side size.'
     )
@@ -963,6 +982,7 @@ if __name__ == '__main__':
         start_time=args.time,
         
         render_and_skip_frames=args.render_and_skip_frames,
+        skip_frames_every_frame=args.skip_frames_every_frame,
         cube_render = args.panorama_rec_size!=None,
         cube_final_render_size = cube_final_render_size,
         
@@ -985,7 +1005,8 @@ if __name__ == '__main__':
         canvas.app.run()
     except KeyboardInterrupt:
         pass
-
+    print("\n\n\n")
+    
     if ffmpeg:
         ffmpeg.stdin.close()
         ffmpeg.wait()
