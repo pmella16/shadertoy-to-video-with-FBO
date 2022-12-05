@@ -793,16 +793,6 @@ class ShaderWatcher(FileSystemEventHandler):
 if __name__ == '__main__':
     vispy.set_log_level('WARNING')
 
-    # GLFW not part of anaconda python distro; works fine with default (PyQt4)
-
-    try:
-        if(IN_COLAB):
-          vispy.use('egl')
-        else:
-          vispy.use(app='Glfw', gl="gl+")
-    except RuntimeError as e:
-        pass
-
     parser = \
         argparse.ArgumentParser(description='Render a ShaderToy-style shader from the specified file.'
                                 )
@@ -854,10 +844,26 @@ if __name__ == '__main__':
                         help='Skip Number of frames every frame. (for TAA etc)'
                         )
     parser.add_argument('--panorama_rec_size', type=str, default=None,
-    help='Cubemap final video size, e.g. 1920x1080 (string). When set - --size used as cube side size.'
+                        help='Cubemap final video size, e.g. 1920x1080 (string). When set - --size used as cube side size.'
     )
+    parser.add_argument('--vispy_use', type=str, default='',
+                        help='vispy.use - egl'
+                        )
 
     args = parser.parse_args()
+    
+    # GLFW not part of anaconda python distro; works fine with default (PyQt4)
+
+    try:
+        if(len(args.vispy_use)>2):
+          vispy.use(args.vispy_use)
+        else:
+          if(IN_COLAB):
+            vispy.use('egl')
+          else:
+            vispy.use(app='Glfw', gl="gl+")
+    except RuntimeError as e:
+        pass
 
     resolution = tuple(int(i) for i in args.size.split('x'))
     cube_final_render_size = None
