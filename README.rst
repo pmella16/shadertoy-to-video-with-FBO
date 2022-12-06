@@ -11,6 +11,13 @@ My `Youtube playlist <https://youtube.com/playlist?list=PLzDEnfuEGFHv9AF11F0UYXX
 
 -----------------
 
+Google Colab script:
+-----------------
+
+**To render Shadertoy shaders to Video on server from any user-OS** - `Colab-shadertoy-to-video-with-FBO <https://github.com/danilw/Colab-shadertoy-to-video-with-FBO>`_
+
+-----------------
+
 **Uploading created video to Twitter/Instagram** - pixel format set to *yuv420p* for *libx264* codec and *.mp4* video can be uploaded to any social platform without problems.
 
 -----------------
