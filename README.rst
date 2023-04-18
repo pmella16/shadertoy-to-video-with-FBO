@@ -11,10 +11,11 @@ My `Youtube playlist <https://youtube.com/playlist?list=PLzDEnfuEGFHv9AF11F0UYXX
 
 -----------------
 
-Google Colab script:
------------------
+.. NOT WORKING ANYMORE commented
+.. Google Colab script:
+.. -----------------
 
-**To render Shadertoy shaders to Video on server from any user-OS** - `Colab-shadertoy-to-video-with-FBO <https://github.com/danilw/Colab-shadertoy-to-video-with-FBO>`_
+.. **To render Shadertoy shaders to Video on server from any user-OS** - `Colab-shadertoy-to-video-with-FBO <https://github.com/danilw/Colab-shadertoy-to-video-with-FBO>`_
 
 -----------------
 
