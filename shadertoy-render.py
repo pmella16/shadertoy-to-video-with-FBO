@@ -935,7 +935,7 @@ if __name__ == '__main__':
                 '-f', 'rawvideo',
                 '-threads', '4',
                 '-pix_fmt', 'rgba',
-                '-s', args.panorama_rec_size if args.panorama_rec_size!=None else args.sizee,
+                '-s', args.panorama_rec_size if args.panorama_rec_size!=None else args.size,
                 '-i', '-',
                 '-c:v', 'qtrle',
                 '-y', args.output,
