@@ -23,6 +23,17 @@ My `Youtube playlist <https://youtube.com/playlist?list=PLzDEnfuEGFHv9AF11F0UYXX
 
 -----------------
 
+**Note 2023**, about vispy and "too many backends":
+-----------------
+
+If you have error on using glfw backend that I set as default - change it in `shadertoy-render.py#L864 <https://github.com/danilw/shadertoy-to-video-with-FBO/blob/master/shadertoy-render.py#L864>`_
+
+For example: *vispy.use('egl')* 
+
+*I had some errors with glfw on AMD GPU, and I just keep as it is using glfw by default because last year I had error with egl backend on Nvidia and egl not working anymore on Colab - Vispy and OpenGL is complete mess, if you need just contact me on discord link above. For me now in 2023 - glfw working on Nvidia, and egl on AMD.*
+
+-----------------
+
 **Supported** - Buffers A-D same as on Shadertoy. Images. ``discard`` supported in buffers and image shader.
 
 **Supported** recording video format: (look line `929 in shadertoy-render.py <https://github.com/danilw/shadertoy-to-video-with-FBO/blob/master/shadertoy-render.py#L929>`_ for encoding parameters)
