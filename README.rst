@@ -34,6 +34,25 @@ I had some errors with glfw on AMD GPU, and I just keep as it is using glfw by d
 
 -----------------
 
+**Note 2023**, about Linux-OpenGL-Vulkan:
+-----------------
+
+To force Zink that is OpenGL to Vulkan translation in Linux:
+
+.. code-block:: bash
+
+	__GLX_VENDOR_LIBRARY_NAME=mesa MESA_LOADER_DRIVER_OVERRIDE=zink GALLIUM_DRIVER=zink sh render.sh
+
+Tested - works, I tested with GLFW backend.
+
+This way you can force/select GPU for Vulkan by adding, for example: (similar with nvidia_icd.json)
+
+.. code-block:: bash
+
+	export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/radeon_icd.i686.json:/usr/share/vulkan/icd.d/radeon_icd.x86_64.json
+
+-----------------
+
 **Supported** - Buffers A-D same as on Shadertoy. Images. ``discard`` supported in buffers and image shader.
 
 **Supported** recording video format: (look line `929 in shadertoy-render.py <https://github.com/danilw/shadertoy-to-video-with-FBO/blob/master/shadertoy-render.py#L929>`_ for encoding parameters)
