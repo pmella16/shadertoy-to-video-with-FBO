@@ -43,13 +43,7 @@ To force Zink that is OpenGL to Vulkan translation in Linux:
 
 	__GLX_VENDOR_LIBRARY_NAME=mesa MESA_LOADER_DRIVER_OVERRIDE=zink GALLIUM_DRIVER=zink sh render.sh
 
-Tested - works, I tested with GLFW backend.
-
-This way you can force/select GPU for Vulkan by adding, for example: (similar with nvidia_icd.json)
-
-.. code-block:: bash
-
-	export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/radeon_icd.i686.json:/usr/share/vulkan/icd.d/radeon_icd.x86_64.json
+Tested - works, I tested with vispy-GLFW backend.
 
 -----------------
 
