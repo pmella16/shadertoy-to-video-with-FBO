@@ -45,6 +45,8 @@ To force Zink that is OpenGL to Vulkan translation in Linux:
 
 Tested - works, I tested with vispy-GLFW backend.
 
+Tested2 - it seems it work only with egl vispy backend.
+
 -----------------
 
 **Supported** - Buffers A-D same as on Shadertoy. Images. ``discard`` supported in buffers and image shader.
