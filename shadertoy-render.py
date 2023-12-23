@@ -344,7 +344,7 @@ class RenderingCanvas(app.Canvas):
         tex = gloo.Texture2D(img)
         tex.interpolation = 'linear'
         tex.wrapping = 'repeat' if rep else 'clamp_to_edge'
-        for j in range(max_iTextures):
+        for j in range(max_iChannels):
             self._BufX[j]['iTexture%d' % i] = tex
             self._BufX[j]['iTextureResolution[%d]' % i] = img.shape
 
