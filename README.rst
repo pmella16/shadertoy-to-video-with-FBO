@@ -118,7 +118,7 @@ Command to encode example:
 
 **Tile rendering works only on Image shader** (``main_image.glsl`` file). Buffers (A-D) still rendered full frame at once. (*also remember* that ``discard`` in shader will be broken when used tile rendering) 
 
-``--skip_frames_every_frame`` **useful for TAA** - render to video only iFrame%this_val - TAA can render frames and for video use only accumulated - similar usage. Remember about feedback-accumulation - and iFrame still going.
+``--skip_frames_every_frame`` **useful for TAA** - render to video only iFrame%this_val - TAA can render frames and for video use only accumulated - similar usage. Remember about feedback-accumulation - and iFrame still going. If you set ``--skip_frames_every_frame=12`` - means every 11 frames will be skiped and frame 12 is rendered to video.
 
 ``--render_and_skip_frames`` **same as above** but skip frames only once at start.
 
