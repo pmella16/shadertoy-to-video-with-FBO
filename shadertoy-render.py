@@ -203,7 +203,10 @@ class RenderingCanvas(app.Canvas):
 
         if duration:
             assert interval != 'auto'
-            self._render_frame_count = math.ceil(duration / interval)+self._total_to_pre_render_iframe+self._total_to_skip_ef_render_iframe*math.ceil(duration / interval)
+            if(self._total_to_skip_ef_render_iframe>0):
+              self._render_frame_count = self._total_to_pre_render_iframe+self._total_to_skip_ef_render_iframe*math.ceil(duration / interval)
+            else:
+              self._render_frame_count = math.ceil(duration / interval)+self._total_to_pre_render_iframe+self._total_to_skip_ef_render_iframe*math.ceil(duration / interval)
         elif not interactive:
             self._render_frame_count = 1
         else:
