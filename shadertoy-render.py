@@ -646,7 +646,7 @@ class RenderingCanvas(app.Canvas):
             if self._tile_index == self._tile_count:
                 if self._ffmpeg_pipe:
                     if(self._pre_render_iframe>=self._total_to_pre_render_iframe):
-                      if(self._skip_ef_render_iframe>=self._total_to_skip_ef_render_iframe):
+                      if(self._skip_ef_render_iframe>=self._total_to_skip_ef_render_iframe-1):
                         self.write_video_frame(self._img)
                     self._render_frame_index += 1
                     self._doubleFbo = not self._doubleFbo
@@ -668,7 +668,7 @@ class RenderingCanvas(app.Canvas):
                     self._tile_coord = [0, 0]
 
                     if(self._pre_render_iframe>=self._total_to_pre_render_iframe):
-                      if(self._skip_ef_render_iframe>=self._total_to_skip_ef_render_iframe):
+                      if(self._skip_ef_render_iframe>=self._total_to_skip_ef_render_iframe-1):
                         self.advance_time()
                         self._skip_ef_render_iframe=0
                       else:
