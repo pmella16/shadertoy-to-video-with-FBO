@@ -61,6 +61,8 @@ Tested2 - it seems it work only with egl vispy backend.
 
 *Not supported* - Cubemaps, Shader-Cubemap, 3d texture, audio input not supported. (2d textures without mipmaps)
 
+*Cubemap* - look example Cubemap, it "emulated" in Buffers, means interpolation on edges is broken. **When recording cubemap as textures** (from 6 sides) - remember to set *rep=False* in functions *set_Buf_texture_input* and *set_texture_input* in *shadertoy-render.py*, to set texture as clamp_to_edge. Also - You can emulate entire *cubemap-shader-feedback* setup, if you do - remember that to read entire cubemap you need to copy all sides to its own buffer - create more buffers and define them in `line 41 <https://github.com/danilw/shadertoy-to-video-with-FBO/blob/master/shadertoy-render.py#L46C8-L46C8>`_ and `line 85 <https://github.com/danilw/shadertoy-to-video-with-FBO/blob/master/shadertoy-render.py#L85>`_ add iChannel u_channel uniforms, I do not provide example for thhis because this is even biger-junk-setup, il make something better for next time I need it.
+
 -----------------
 
 **Shader uniforms:**
@@ -195,8 +197,6 @@ not best quality (work on Windows and Linux)
 
 Useful ImageMagic commands:
 -----------------
-
-**When recording cubemap** (from 6 sides) - remember to set *rep=False* in functions *set_Buf_texture_input* and *set_texture_input* in *shadertoy-render.py*, to set texture as clamp_to_edge.
 
 When used *import imageio* in Python script - *imageio* does not support indexed color, and *convert* or *ffmpeg* sometime can convert images to indexed format, look *"correct RGBA png color format"* below to convert back.
 
