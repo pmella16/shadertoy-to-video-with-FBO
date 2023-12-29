@@ -28,7 +28,7 @@ My `Youtube playlist <https://youtube.com/playlist?list=PLzDEnfuEGFHv9AF11F0UYXX
 
 If you have error on using glfw backend that I set as default - change it in `864 line in shadertoy-render.py <https://github.com/danilw/shadertoy-to-video-with-FBO/blob/master/shadertoy-render.py#L864>`_
 
-For example: *vispy.use('egl')* 
+For example: *vispy.use('egl')* or add parameter ``--vispy_use=egl``
 
 I had some errors with glfw on AMD GPU, and I just keep as it is using glfw by default because last year I had error with egl backend on Nvidia and egl not working anymore `in Colab <https://github.com/vispy/vispy/issues/2469#issuecomment-1513538902>`_ - *Vispy and OpenGL is complete mess*, you can contact me on discord link above. *For me now in 2023 - glfw working on Nvidia, and egl on AMD.*
 
@@ -45,7 +45,7 @@ To force Zink that is OpenGL to Vulkan translation in Linux:
 
 Tested - works, I tested with vispy-GLFW backend.
 
-Tested2 - it seems it work only with egl vispy backend.
+Tested2 - it seems it work only with egl vispy backend. ``--vispy_use=egl``
 
 -----------------
 
@@ -120,10 +120,24 @@ Command to encode example:
 
 **Tile rendering works only on Image shader** (``main_image.glsl`` file). Buffers (A-D) still rendered full frame at once. (*also remember* that ``discard`` in shader will be broken when used tile rendering) 
 
+-----------------
+
 ``--skip_frames_every_frame`` **useful for TAA** - render to video only iFrame%this_val - TAA can render frames and for video use only accumulated - similar usage. Remember about feedback-accumulation - and iFrame still going. If you set ``--skip_frames_every_frame=12`` - means every 11 frames will be skiped and frame 12 is rendered to video.
 
-``--render_and_skip_frames`` **same as above** but skip frames only once at start.
+``--render_and_skip_frames`` **same as above** - useful for TAA shaders to make 1 frame screenshot - skip frames only once at start.
 
+**Example 1 frame screenshot**:
+
+.. code-block:: bash
+	
+	#!/bin/sh
+	export __GLX_VENDOR_LIBRARY_NAME=mesa MESA_LOADER_DRIVER_OVERRIDE=zink GALLIUM_DRIVER=zink
+
+	python3 ../shadertoy-render.py --output 1.mov --vispy_use=egl --size=3840x2160 --rate=1 --duration=1.0 --render_and_skip_frames=30 --bitrate=8M main_image.glsl
+
+	rm -rf frames
+	mkdir frames
+	ffmpeg -i 1.mov -vf fps=1 "frames/out%d.png"
 -----------------
 
 **When recording visual result not equal to Shadertoy:**
