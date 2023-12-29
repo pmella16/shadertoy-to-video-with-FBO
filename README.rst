@@ -126,7 +126,7 @@ Command to encode example:
 
 ``--render_and_skip_frames`` **same as above** - useful for TAA shaders to make 1 frame screenshot - skip frames only once at start.
 
-**Example 1 frame screenshot** for TAA shader with 60 frames waiting:
+**Example 1 frame 4k resolution screenshot** for TAA shader with 60 frames waiting:
 
 .. code-block:: bash
 	
