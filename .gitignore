@@ -61,6 +61,7 @@ target/
 
 # Videos
 /*.mp4
+/*.mp3
 
 # Windows stuff
 /Thumbs.db
