@@ -57,11 +57,8 @@ try:
 except:
   IN_COLAB = False
 
-vertex = \
-    """
-#version 140
-#extension GL_ARB_shader_bit_encoding : enable
-#extension GL_ARB_gpu_shader5 : enable
+vertex = """
+#version 120
 
 attribute vec2 position;
 void main()
@@ -72,10 +69,7 @@ void main()
 
 fragment_template = \
     """
-#version 140
-
-#extension GL_ARB_shader_bit_encoding : enable
-#extension GL_ARB_gpu_shader5 : enable
+#version 120
 
 uniform vec3      iResolution;           // viewport resolution (in pixels)
 uniform float     iGlobalTime;           // shader playback time (in seconds)
@@ -852,6 +846,9 @@ if __name__ == '__main__':
     parser.add_argument('--vispy_use', type=str, default='',
                         help='vispy.use - egl'
                         )
+    parser.add_argument('--mp3', type=str, default='1.mp3',
+                        help='name of mp3 file'
+                        )
 
     args = parser.parse_args()
     
@@ -928,6 +925,7 @@ if __name__ == '__main__':
     observer = None
     ffmpeg = None
     ffmpeg_pipe = None
+    input_audio_file = args.mp3
 
     if output_to_video:
         if file_ext == '.mov':
@@ -971,6 +969,9 @@ if __name__ == '__main__':
                     '-pix_fmt', 'rgba',
                     '-s', args.panorama_rec_size if args.panorama_rec_size!=None else args.size,
                     '-i', '-',
+                    '-i', input_audio_file, 
+                    '-c:a', 'aac',  # Agrega esta línea para especificar el códec de audio
+                    '-b:a', '192k', 
                     '-pix_fmt', 'yuv420p',
                     '-movflags', '+faststart',
                     '-b:v', args.bitrate,

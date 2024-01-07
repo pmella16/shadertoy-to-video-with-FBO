@@ -227,3 +227,7 @@ Cut corners on image, with correct RGBA png color format:
 .. code-block:: bash
 
         convert '1.png' -colorspace sRGB -define png:format=png32 -define png:color-type=6 -gravity center -background transparent -extent 2048x2048 '1.png'
+
+
+python3 ../shadertoy-render.py --output 3.mp4 --size=1920x1080 --rate=60 --duration=15.0 --bitrate=5M main_image3.glsl
+python3 ../shadertoy-render.py --output 4.mp4 --size=1920x1080 --rate=60 --duration=9.0 --bitrate=5M --mp3=4.mp3 4.glsl
