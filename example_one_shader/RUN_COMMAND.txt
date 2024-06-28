@@ -10,3 +10,18 @@ python ../shadertoy-render.py --output 1.mov --size=800x450 --rate=30 --duration
 
 
 python3 for linux
+
+
+python3 ../shadertoy-render.py  --size=1920x1080 --rate=60 --bitrate=5M --duration=9.0 --output 4.mp4 --mp3=4.mp3 4.glsl
+
+python3 ../shadertoy-render.py  --size=3840x2160 --rate=30 --bitrate=45M --duration=16.0 --output 129.mp4 --mp3=0.mp3 129.glsl   
+
+3840x2160  60fps 66mb
+3840x2160  30fps 45mb
+2560x1440  60fps 30mb
+2560x1440  30fps 20mb
+
+Lofi Hip Hop - Deep Trippy Hazy Loop fractal kaleidoscope infinite [ Calm - Relax - Study ]
+Lofi hip hop music trippy loop to relax/study 04
+ÁRBOL DE LA VIDA - ABRE TODAS LAS PUERTAS DE LA ABUNDANCIA Y PROSPERIDAD, ELIMINA TODO BLOQUEO 888HZ
+SI ESTE VIDEO APARECE EN TU VIDA, TODA LA BENDICIÓN del UNIVERSO VENDRA HACIA TI - MILAGROS TOTALES
